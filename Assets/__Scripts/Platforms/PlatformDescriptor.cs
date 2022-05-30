@@ -272,7 +272,7 @@ public class PlatformDescriptor : MonoBehaviour
         if (chromaGradients.ContainsKey(group))
         {
             var gradientEvent = chromaGradients[group].GradientEvent;
-            if (atsc.CurrentBeat >= gradientEvent.LightGradient.Duration + gradientEvent.Time ||
+            if (atsc.CurrentBeat >= gradientEvent.LightGradient.ChromaGradient1.Duration + gradientEvent.Time ||
                 !Settings.Instance.EmulateChromaLite)
             {
                 StopCoroutine(chromaGradients[group].Routine);
@@ -393,12 +393,12 @@ public class PlatformDescriptor : MonoBehaviour
     private IEnumerator GradientRoutine(MapEvent gradientEvent, LightsManager group)
     {
         var gradient = gradientEvent.LightGradient;
-        var easingFunc = Easing.ByName[gradient.EasingType];
+        var easingFunc = Easing.ByName[gradient.ChromaGradient1.EasingType];
 
         float progress;
-        while ((progress = (atsc.CurrentBeat - gradientEvent.Time) / gradient.Duration) < 1)
+        while ((progress = (atsc.CurrentBeat - gradientEvent.Time) / gradient.ChromaGradient1.Duration) < 1)
         {
-            var lerped = Color.LerpUnclamped(gradient.StartColor, gradient.EndColor, easingFunc(progress));
+            var lerped = Color.LerpUnclamped(gradient.ChromaGradient1.StartColor, gradient.ChromaGradient1.EndColor, easingFunc(progress));
             if (!SoloAnEventType || gradientEvent.Type == SoloEventType)
             {
                 chromaCustomColors[group] = lerped;
@@ -409,7 +409,7 @@ public class PlatformDescriptor : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        chromaCustomColors[group] = gradient.EndColor;
+        chromaCustomColors[group] = gradient.ChromaGradient1.EndColor;
         group.ChangeColor(chromaCustomColors[group].WithAlpha(1), 0, group.ControllingLights);
         group.ChangeMultiplierAlpha(chromaCustomColors[group].a, group.ControllingLights);
     }

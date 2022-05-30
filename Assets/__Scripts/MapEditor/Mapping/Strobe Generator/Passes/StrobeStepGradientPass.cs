@@ -37,8 +37,8 @@ public class StrobeStepGradientPass : StrobeGeneratorPass
             // Might as well be fancy and add support for Chroma 2.0 gradients
             if (e.LightGradient != null)
             {
-                colorPoints.Add(e.Time, e.LightGradient.StartColor);
-                colorPoints.Add(e.Time + e.LightGradient.Duration, e.LightGradient.EndColor);
+                colorPoints.Add(e.Time, e.LightGradient.ChromaGradient1.StartColor);
+                colorPoints.Add(e.Time + e.LightGradient.ChromaGradient1.Duration, e.LightGradient.ChromaGradient1.EndColor);
             }
             else if (e.IsChromaEvent) // This already checks customData, so if this is true then customData exists.
             {

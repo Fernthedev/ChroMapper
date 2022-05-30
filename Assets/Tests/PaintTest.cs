@@ -53,7 +53,7 @@ namespace Tests
             Assert.AreEqual(1, eventsContainer.LoadedObjects.Count);
             Assert.AreEqual(2, eventsContainer.UnsortedObjects[0].Time);
             Assert.AreEqual(2, ((MapEvent)eventsContainer.UnsortedObjects[0]).Type);
-            Assert.AreEqual(Color.red, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.StartColor);
+            Assert.AreEqual(Color.red, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.ChromaGradient1.StartColor);
 
             // Undo move
             actionContainer.Undo();
@@ -61,7 +61,7 @@ namespace Tests
             Assert.AreEqual(1, eventsContainer.LoadedObjects.Count);
             Assert.AreEqual(2, eventsContainer.UnsortedObjects[0].Time);
             Assert.AreEqual(1, ((MapEvent)eventsContainer.UnsortedObjects[0]).Type);
-            Assert.AreEqual(Color.red, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.StartColor);
+            Assert.AreEqual(Color.red, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.ChromaGradient1.StartColor);
 
             // Undo paint
             actionContainer.Undo();
@@ -69,7 +69,7 @@ namespace Tests
             Assert.AreEqual(1, eventsContainer.LoadedObjects.Count);
             Assert.AreEqual(2, eventsContainer.UnsortedObjects[0].Time);
             Assert.AreEqual(1, ((MapEvent)eventsContainer.UnsortedObjects[0]).Type);
-            Assert.AreEqual(Color.blue, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.StartColor);
+            Assert.AreEqual(Color.blue, ((MapEvent)eventsContainer.UnsortedObjects[0]).LightGradient.ChromaGradient1.StartColor);
         }
 
         [Test]

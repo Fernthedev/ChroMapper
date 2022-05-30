@@ -32,7 +32,7 @@ public class PaintSelectedObjects : MonoBehaviour
             if (@event.LightGradient != null)
             {
                 //Modify start color if we are painting a Chroma 2.0 gradient
-                @event.LightGradient.StartColor = picker.CurrentColor;
+                @event.LightGradient.ChromaGradient1.StartColor = picker.CurrentColor;
                 return true;
             }
         }

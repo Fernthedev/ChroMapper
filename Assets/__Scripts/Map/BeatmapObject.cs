@@ -1,4 +1,7 @@
 ﻿using System;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleJSON;
 using UnityEngine;
 
@@ -22,8 +25,10 @@ public abstract class BeatmapObject
         BpmChange
     }
 
+    [JsonIgnore]
     public abstract ObjectType BeatmapType { get; set; }
 
+    [JsonIgnore]
     /// <summary>
     ///     Whether or not there exists a <see cref="BeatmapObjectContainer" /> that contains this data.
     /// </summary>
@@ -32,14 +37,15 @@ public abstract class BeatmapObject
     /// <summary>
     ///     Time, in beats, where this object is located.
     /// </summary>
-    public float Time;
+    public abstract float Time { get; set; }
 
     /// <summary>
     ///     An expandable <see cref="JSONNode" /> that stores data for Beat Saber mods to use.
     /// </summary>
-    public JSONNode CustomData;
+    public virtual ICustomData CustomData { get; set; }
 
-    public abstract JSONNode ConvertToJson();
+    // TODO: Remove
+    public virtual JObject ConvertToJson() => JObject.FromObject(this);
 
     protected abstract bool IsConflictingWithObjectAtSameTime(BeatmapObject other, bool deletion = false);
 
@@ -56,20 +62,20 @@ public abstract class BeatmapObject
         switch (originalData)
         {
             case MapEvent evt:
-                var ev = new MapEvent(evt.Time, evt.Type, evt.Value, originalData.CustomData?.Clone())
+                var ev = new MapEvent(evt.Time, evt.Type, evt.Value, originalData.CustomData?.DeepCopy())
                 {
-                    LightGradient = evt.LightGradient?.Clone()
+                    LightGradient = evt.LightGradient.ChromaGradient1?.Clone()
                 };
                 objectData = ev as T;
                 break;
             case BeatmapNote note:
                 objectData = new BeatmapNote(note.Time, note.LineIndex, note.LineLayer, note.Type,
-                    note.CutDirection, originalData.CustomData?.Clone()) as T;
+                    note.CutDirection, originalData.CustomData?.DeepCopy()) as T;
                 break;
             default:
                 objectData =
-                    Activator.CreateInstance(originalData.GetType(), new object[] { originalData.ConvertToJson() }) as T;
-                objectData.CustomData = originalData.CustomData?.Clone();
+                    Activator.CreateInstance(originalData.GetType(), originalData.ConvertToJson()) as T;
+                objectData.CustomData = originalData.CustomData?.DeepCopy();
                 break;
         }
 
@@ -107,14 +113,20 @@ public abstract class BeatmapObject
     public virtual void Apply(BeatmapObject originalData)
     {
         Time = originalData.Time;
-        CustomData = originalData.CustomData?.Clone();
+        CustomData = originalData.CustomData?.DeepCopy();
     }
 
-    public JSONNode GetOrCreateCustomData()
-    {
-        if (CustomData == null)
-            CustomData = new JSONObject();
+    public abstract JSONNode GetOrCreateCustomData();
+}
 
-        return CustomData;
-    }
+public abstract class BeatmapObject<TCd> : BeatmapObject where TCd : class, ICustomData
+{
+    /// <summary>
+    /// Utility for getting casted type
+    /// </summary>
+    [JsonIgnore]
+    [PublicAPI]
+    public TCd CustomDataCast { get => (TCd)base.CustomData; set => base.CustomData = value; }
+    
+    
 }

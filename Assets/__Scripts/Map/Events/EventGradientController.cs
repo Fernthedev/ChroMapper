@@ -23,8 +23,8 @@ public class EventGradientController : MonoBehaviour
     /// </summary>
     private void RegenerateTexture(MapEvent.ChromaGradient gradient)
     {
-        var startColor = gradient.StartColor;
-        var endColor = gradient.EndColor;
+        var startColor = gradient.ChromaGradient1.StartColor;
+        var endColor = gradient.ChromaGradient1.EndColor;
 
         var texture = Create(new[] { startColor, endColor }, gradient);
         currentTex = texture;
@@ -76,7 +76,7 @@ public class EventGradientController : MonoBehaviour
             filterMode = filterMode
         };
 
-        var easing = Easing.ByName[chromaGradient.EasingType];
+        var easing = Easing.ByName[chromaGradient.ChromaGradient1.EasingType];
         // draw texture
         for (var i = 0; i < size; i++) outputTex.SetPixel(i, 0, gradient.Evaluate(easing((float)i / size)));
         outputTex.Apply(false);

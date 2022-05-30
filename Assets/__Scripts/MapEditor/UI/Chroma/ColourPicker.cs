@@ -28,6 +28,6 @@ public class ColourPicker : MonoBehaviour
         if (!(obj is MapEvent e)) return;
         if (e.Value >= ColourManager.RgbintOffset)
             picker.CurrentColor = ColourManager.ColourFromInt(e.Value);
-        else if (e.LightGradient != null) picker.CurrentColor = e.LightGradient.StartColor;
+        else if (e.LightGradient != null) picker.CurrentColor = e.LightGradient.ChromaGradient1.StartColor;
     }
 }

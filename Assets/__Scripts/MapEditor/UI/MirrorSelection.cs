@@ -195,9 +195,9 @@ public class MirrorSelection : MonoBehaviour
                 {
                     if (e.LightGradient != null)
                     {
-                        var startColor = e.LightGradient.StartColor;
-                        e.LightGradient.StartColor = e.LightGradient.EndColor;
-                        e.LightGradient.EndColor = startColor;
+                        var startColor = e.LightGradient.ChromaGradient1.StartColor;
+                        e.LightGradient.ChromaGradient1.StartColor = e.LightGradient.ChromaGradient1.EndColor;
+                        e.LightGradient.ChromaGradient1.EndColor = startColor;
                     }
 
                     if (e.IsUtilityEvent) continue;

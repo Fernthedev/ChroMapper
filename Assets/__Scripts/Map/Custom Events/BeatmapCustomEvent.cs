@@ -1,39 +1,33 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleJSON;
 
-public class BeatmapCustomEvent : BeatmapObject
+public class BeatmapCustomEvent : BeatmapObject<IEventCustomData>
 {
+    [JsonProperty("_type")]
     public string Type;
+    
+    [JsonProperty("_time")]
+    public override float Time { get; set; }
 
-    public BeatmapCustomEvent(JSONNode node)
-    {
-        Time = RetrieveRequiredNode(node, "_time").AsFloat;
-        Type = RetrieveRequiredNode(node, "_type").Value;
-        CustomData = RetrieveRequiredNode(node, "_data");
-    }
+    [JsonProperty("_data")]
+    public sealed override ICustomData CustomData { get; set; }
+    
+    [JsonIgnore]
+    public override ObjectType BeatmapType { get; set; } = ObjectType.CustomEvent;
 
-    public BeatmapCustomEvent(float time, string type, JSONNode data)
+    public BeatmapCustomEvent(float time, string type, IEventCustomData data)
     {
         Time = time;
         Type = type;
         CustomData = data;
     }
-
-    public override ObjectType BeatmapType { get; set; } = ObjectType.CustomEvent;
-
-    public override JSONNode ConvertToJson()
-    {
-        JSONNode node = new JSONObject();
-        node["_time"] = Math.Round(Time, DecimalPrecision);
-        node["_type"] = Type;
-        node["_data"] = CustomData;
-        return node;
-    }
-
+    
     protected override bool IsConflictingWithObjectAtSameTime(BeatmapObject other, bool deletion)
     {
         if (deletion)
-            return Type == (other as BeatmapCustomEvent).Type;
+            return Type == (other as BeatmapCustomEvent)?.Type;
         return false;
     }
 
@@ -43,4 +37,6 @@ public class BeatmapCustomEvent : BeatmapObject
 
         if (originalData is BeatmapCustomEvent ev) Type = ev.Type;
     }
+
+    public override JSONNode GetOrCreateCustomData() => throw new NotImplementedException();
 }

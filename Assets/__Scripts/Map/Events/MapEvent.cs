@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class MapEvent : BeatmapObject
+public sealed class MapEvent : BeatmapObject<IEventCustomData>
 {
     /*
      * Event Type constants
@@ -45,58 +50,72 @@ public class MapEvent : BeatmapObject
     public const int LightValueRedFade = 7;
 
     public static readonly int[] LightValueToRotationDegrees = { -60, -45, -30, -15, 15, 30, 45, 60 };
+    
+    [JsonIgnore]
     public int PropId = -1;
+    
+    
+    [JsonProperty("_type")]
     [FormerlySerializedAs("_type")] public int Type;
+    
+    [JsonProperty("_value")]
     [FormerlySerializedAs("_value")] public int Value;
-    [FormerlySerializedAs("_lightGradient")] public ChromaGradient LightGradient;
+
+    // TODO: Remove
+    [JsonProperty("_lightGradient")]
+    [CanBeNull]
+    [DefaultValue(null)]
+    [FormerlySerializedAs("_lightGradient")] 
+    public ChromaGradient LightGradient;
 
     /*
      * MapEvent logic
      */
-
-    public MapEvent(JSONNode node)
-    {
-        Time = RetrieveRequiredNode(node, "_time").AsFloat; //KIIIIWIIIIII
-        Type = RetrieveRequiredNode(node, "_type").AsInt;
-        Value = RetrieveRequiredNode(node, "_value").AsInt;
-        CustomData = node["_customData"];
-        if (node["_customData"]["_lightGradient"] != null)
-            LightGradient = new ChromaGradient(node["_customData"]["_lightGradient"]);
-    }
-
-    public MapEvent(float time, int type, int value, JSONNode customData = null)
+    public MapEvent(float time, int type, int value, IEventCustomData customData = null)
     {
         Time = time;
         Type = type;
         Value = value;
         CustomData = customData;
-
-        if (CustomData != null && CustomData.HasKey("_lightGradient"))
-            LightGradient = new ChromaGradient(CustomData["_lightGradient"]);
+        LightGradient = customData.LightGadient;
     }
 
+    [JsonIgnore]
     public bool IsRotationEvent => Type == EventTypeEarlyRotation || Type == EventTypeLateRotation;
+    
+    [JsonIgnore]
     public bool IsRingEvent => Type == EventTypeRingsRotate || Type == EventTypeRingsZoom;
+    
+    [JsonIgnore]
     public bool IsLaserSpeedEvent => Type == EventTypeLeftLasersSpeed || Type == EventTypeRightLasersSpeed;
-
+    
+    [JsonIgnore]
     public bool IsUtilityEvent => IsRotationEvent || IsRingEvent || IsLaserSpeedEvent ||
                                   Type == EventTypeBoostLights || IsInterscopeEvent;
 
+    [JsonIgnore]
     public bool IsInterscopeEvent => Type == EventTypeCustomEvent1 || Type == EventTypeCustomEvent2;
+    
+    [JsonIgnore]
     public bool IsLegacyChromaEvent => Value >= ColourManager.RgbintOffset;
-    public bool IsChromaEvent => CustomData?.HasKey("_color") ?? false;
+    
+    [JsonIgnore]
+    public bool IsChromaEvent => CustomData?.ContainsKey("_color") ?? false;
+    
+    [JsonIgnore]
     public bool IsPropogationEvent => PropId > -1; //_customData["_lightID"].IsArray
-    public bool IsLightIdEvent => CustomData?.HasKey("_lightID") ?? false;
+    
+    [JsonIgnore]
+    public bool IsLightIdEvent => CustomData?.ContainsKey("_lightID") ?? false;
 
-    public int[] LightId => !CustomData["_lightID"].IsArray
-        ? new[] { CustomData["_lightID"].AsInt }
-        : CustomData["_lightID"].AsArray.Linq.Select(x => x.Value.AsInt).ToArray();
-
+    [JsonIgnore]
     public override ObjectType BeatmapType { get; set; } = ObjectType.Event;
 
+    public override float Time { get; set; }
+
     public static bool IsBlueEventFromValue(int value) => value == LightValueBlueON ||
-                                                           value == LightValueBlueFlash ||
-                                                           value == LightValueBlueFade;
+                                                          value == LightValueBlueFlash ||
+                                                          value == LightValueBlueFade;
 
     public int? GetRotationDegreeFromValue()
     {
@@ -142,25 +161,6 @@ public class MapEvent : BeatmapObject
         );
     }
 
-    public override JSONNode ConvertToJson()
-    {
-        JSONNode node = new JSONObject();
-        node["_time"] = Math.Round(Time, DecimalPrecision);
-        node["_type"] = Type;
-        node["_value"] = Value;
-        if (CustomData != null)
-        {
-            node["_customData"] = CustomData;
-            if (LightGradient != null)
-            {
-                var lightGradient = LightGradient.ToJsonNode();
-                if (lightGradient != null && lightGradient.Children.Count() > 0)
-                    node["_customData"]["_lightGradient"] = lightGradient;
-            }
-        }
-
-        return node;
-    }
 
     protected override bool IsConflictingWithObjectAtSameTime(BeatmapObject other, bool deletion)
     {
@@ -189,53 +189,5 @@ public class MapEvent : BeatmapObject
         }
     }
 
-    [Serializable]
-    public class ChromaGradient
-    {
-        public float Duration;
-        public Color StartColor;
-        public Color EndColor;
-        public string EasingType;
-
-        public ChromaGradient(JSONNode gradientObject)
-        {
-            if (gradientObject["_startColor"] == null)
-                throw new ArgumentException("Gradient object must have a start color named \"_startColor\"");
-            if (gradientObject["_endColor"] == null)
-                throw new ArgumentException("Gradient object must have a end color named \"_endColor\"");
-            Duration = gradientObject?["_duration"] ?? 0;
-            StartColor = gradientObject["_startColor"];
-            EndColor = gradientObject["_endColor"];
-            if (gradientObject.HasKey("_easing"))
-            {
-                if (!Easing.ByName.ContainsKey(gradientObject["_easing"]))
-                    throw new ArgumentException("Gradient object contains invalid easing type.");
-                EasingType = gradientObject["_easing"];
-            }
-            else
-            {
-                EasingType = "easeLinear";
-            }
-        }
-
-        public ChromaGradient(Color start, Color end, float duration = 1, string easing = "easeLinear")
-        {
-            StartColor = start;
-            EndColor = end;
-            Duration = duration;
-            EasingType = easing;
-        }
-
-        public ChromaGradient Clone() => new ChromaGradient(StartColor, EndColor, Duration, EasingType);
-
-        public JSONNode ToJsonNode()
-        {
-            var obj = new JSONObject();
-            obj["_duration"] = Duration;
-            obj["_startColor"] = StartColor;
-            obj["_endColor"] = EndColor;
-            obj["_easing"] = EasingType;
-            return obj;
-        }
-    }
+    public override JSONNode GetOrCreateCustomData() => throw new NotImplementedException();
 }

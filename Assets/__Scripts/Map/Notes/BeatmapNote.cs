@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class BeatmapNote : BeatmapObject, IBeatmapObjectBounds
+public class BeatmapNote : BeatmapObject<INoteCustomData>, IBeatmapObjectBounds
 {
     public const int LineIndexFarLeft = 0;
     public const int LineIndexMidLeft = 1;
@@ -56,7 +56,7 @@ public class BeatmapNote : BeatmapObject, IBeatmapObjectBounds
         CustomData = node["_customData"];
     }
 
-    public BeatmapNote(float time, int lineIndex, int lineLayer, int type, int cutDirection, JSONNode customData = null)
+    public BeatmapNote(float time, int lineIndex, int lineLayer, int type, int cutDirection, INoteCustomData customData = null)
     {
         Time = time;
         LineIndex = lineIndex;
@@ -71,6 +71,7 @@ public class BeatmapNote : BeatmapObject, IBeatmapObjectBounds
                                    CutDirection == NoteCutDirectionRight;
 
     public override ObjectType BeatmapType { get; set; } = ObjectType.Note;
+    public override float Time { get; set; }
 
     public Vector2 GetCenter() => GetPosition() + new Vector2(0f, 0.5f);
 
@@ -105,7 +106,7 @@ public class BeatmapNote : BeatmapObject, IBeatmapObjectBounds
 
     public Vector3 GetScale()
     {
-        if (CustomData?.HasKey("_scale") ?? false) return CustomData["_scale"].ReadVector3();
+        if (CustomData?.ContainsKey("_scale") ?? false) return CustomData["_scale"].ReadVector3();
         return Vector3.one;
     }
 
@@ -129,4 +130,6 @@ public class BeatmapNote : BeatmapObject, IBeatmapObjectBounds
             LineLayer = note.LineLayer;
         }
     }
+
+    public override JSONNode GetOrCreateCustomData() => throw new NotImplementedException();
 }

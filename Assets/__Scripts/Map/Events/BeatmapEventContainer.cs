@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -89,7 +90,7 @@ public class BeatmapEventContainer : BeatmapObjectContainer
         transform.localEulerAngles = Vector3.zero;
         if (EventData.LightGradient != null && Settings.Instance.VisualizeChromaGradients)
         {
-            eventGradientController.UpdateDuration(EventData.LightGradient.Duration);
+            eventGradientController.UpdateDuration(EventData.LightGradient.ChromaGradient1.Duration);
         }
         //Move event up or down enough to give a constant distance from the bottom of the event, taking the y alpha scale into account
         if (Settings.Instance.VisualizeChromaAlpha) transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + ((GetHeight() - 1f) / 2.775f), transform.localPosition.z);
@@ -141,9 +142,10 @@ public class BeatmapEventContainer : BeatmapObjectContainer
     private float GetHeight()
     {
         var height = 1f;  //Default to 1
-        if (EventData.CustomData != null && EventData.CustomData.HasKey("_color") && EventData.CustomData["_color"].Count == 4)
+        var colorArray = EventData.CustomData.GetJToken("_color", "color")?.Values<float>().ToArray();
+        if (EventData.CustomData != null && colorArray is { Length: 4 })
         {
-            height = Mathf.Clamp(EventData.CustomData["_color"][3], 0.1f, 1.5f);  //The alpha of the event, clamped to avoid too small/too tall events
+            height = Mathf.Clamp(colorArray[3], 0.1f, 1.5f);  //The alpha of the event, clamped to avoid too small/too tall events
         }
         else if (EventData.CustomData != null && EventData.CustomData.HasKey("_lightGradient") && EventData.CustomData["_lightGradient"].HasKey("_startColor") && EventData.CustomData["_lightGradient"]["_startColor"].Count == 4)
         {
@@ -158,8 +160,8 @@ public class BeatmapEventContainer : BeatmapObjectContainer
         {
             if (Settings.Instance.EmulateChromaLite && EventData.Value != MapEvent.LightValueOff)
             {
-                ChangeColor(EventData.LightGradient.StartColor);
-                ChangeBaseColor(EventData.LightGradient.StartColor);
+                ChangeColor(EventData.LightGradient.ChromaGradient1.StartColor);
+                ChangeBaseColor(EventData.LightGradient.ChromaGradient1.StartColor);
             }
 
             eventGradientController.SetVisible(true);

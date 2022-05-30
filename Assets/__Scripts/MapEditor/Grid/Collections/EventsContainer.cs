@@ -240,7 +240,7 @@ public class EventsContainer : BeatmapObjectContainerCollection, CMInput.IEventG
 
     private IEnumerator WaitForGradientThenRecycle(MapEvent @event)
     {
-        var endTime = @event.Time + @event.LightGradient.Duration;
+        var endTime = @event.Time + @event.LightGradient.ChromaGradient1.Duration;
         yield return new WaitUntil(() =>
             endTime < AudioTimeSyncController.CurrentBeat + DespawnCallbackController.Offset);
         RecycleContainer(@event);
