@@ -16,7 +16,7 @@ public interface IBeatmapJSON
 }
 
 
-public interface IBeatmapCustomJSON
+public interface IBeatmapCustomJSON : IBeatmapJSON
 {
     [CanBeNull]
     [JsonIgnore]

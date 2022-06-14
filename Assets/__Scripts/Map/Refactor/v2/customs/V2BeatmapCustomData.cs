@@ -1,40 +1,25 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-public class V2BeatmapCustomData : Dictionary<string, JToken>, IBeatmapCustomData
+public class V2BeatmapCustomData : AbstractV2CustomData, IBeatmapCustomData
 {
-    public bool isV3 => false;
-
-    [JsonIgnore]
-    public IEnumerable<ICustomEvent> CustomEvents { get; set; }
-    
-    [JsonProperty("_customEvents")]
-    public IList<V2CustomEvent> CustomEventsV2 { get; set; }
-
-    [JsonExtensionData]
-    public IDictionary<string, JToken> UnserializedData { get; set; }
-
-    public V2BeatmapCustomData()
-    {
-    }
-
     public V2BeatmapCustomData([NotNull] IDictionary<string, JToken> dictionary) : base(dictionary)
     {
     }
 
-    public V2BeatmapCustomData(int capacity) : base(capacity)
+    [JsonIgnore]
+    public IEnumerable<ICustomEvent> CustomEvents
     {
+        get => Get<JArray>("_customEvents")?.ToObject<List<V2CustomEvent>>();
+        set => this["_customEvents"] = JArray.FromObject(value);
     }
-    
-    public IBeatmapJSON Clone() => new V2BeatmapCustomData(this);
+
+    public override IBeatmapJSON Clone() => new V2BeatmapCustomData(this);
 
 
     public ICustomData ShallowClone() => throw new System.NotImplementedException();
 
     public ICustomData DeepCopy() => throw new System.NotImplementedException();
-
 }
-

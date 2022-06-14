@@ -9,7 +9,6 @@ public interface IBeatmap : IBeatmapCustomJSON
     IList<INote> Notes { get; set; }
     IList<IEvent> Events { get; set; }
     IList<IObstacle> Obstacles { get; set; }
-    IList<ICustomEvent> CustomEvents { get; set; }
 
 
     // TODO: The rest
