@@ -12,7 +12,7 @@ public interface IBeatmapJSON
 
     IBeatmapJSON Clone();
 
-    [JsonExtensionData] IDictionary<string, JToken> UnserializedData { get; set; }
+    [JsonExtensionData] IDictionary<string, JToken> UnserializedData { get; }
 }
 
 
@@ -20,7 +20,7 @@ public interface IBeatmapCustomJSON : IBeatmapJSON
 {
     [CanBeNull]
     [JsonIgnore]
-    ICustomData CustomData { get; set; }
+    ICustomData UntypedCustomData { get; }
 }
 
 public interface IBeatmapItem : IBeatmapJSON
@@ -32,6 +32,13 @@ public interface ICustomBeatmapItem : IBeatmapItem, IBeatmapCustomJSON
 {
 }
 
-public interface IBeatmapObject : ICustomBeatmapItem
+public interface ICustomBeatmapItem<T> : IBeatmapItem, IBeatmapCustomJSON where T: class, ICustomData
 {
+    [CanBeNull] 
+    public T CustomData { get; }
+}
+
+public interface IBeatmapObject<T> : ICustomBeatmapItem<T> where T : class, IObjectCustomData
+{
+    public int LineIndex { get; set; }
 }

@@ -9,7 +9,7 @@ public interface IEventCustomData : ICustomData
     Color? Color { get; set; }
 
     [CanBeNull]
-    IEnumerable<int> LightIDs { get; set; }
+    IList<int> LightIDs { get; set; }
 
     [CanBeNull] ChromaGradient LightGadient { get; set; }
 }

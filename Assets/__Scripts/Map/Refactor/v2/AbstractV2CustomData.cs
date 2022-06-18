@@ -10,6 +10,6 @@ public abstract class AbstractV2CustomData : AbstractCustomData, ICustomData
     public AbstractV2CustomData(IDictionary<string, JToken> unserializedData) => UnserializedData = unserializedData;
 
     [JsonExtensionData]
-    public IDictionary<string, JToken> UnserializedData { get; set; }
+    public IDictionary<string, JToken> UnserializedData { get; }
 }
 

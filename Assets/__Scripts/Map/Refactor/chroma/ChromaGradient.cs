@@ -3,24 +3,26 @@ using System.ComponentModel;
 using Newtonsoft.Json;
 using UnityEngine;
 
+// TODO: Make this a dynamically grabbed object
 public class ChromaGradient : ICloneable
 {
     [JsonProperty("_duration")]
     [DefaultValue(0)]
-    public float Duration;
+    public readonly float Duration;
 
     [JsonProperty("_startColor")]
     [JsonRequired]
-    public Color StartColor;
+    public readonly Color StartColor;
 
     [JsonProperty("_endColor")]
     [JsonRequired]
-    public Color EndColor;
+    public readonly Color EndColor;
 
     [JsonProperty("_easing")]
     [DefaultValue("easeLinear")]
-    public string EasingType;
+    public readonly string EasingType;
 
+    [JsonConstructor]
     public ChromaGradient(Color startColor, Color endColor, float duration, string easingType)
     {
         StartColor = startColor;

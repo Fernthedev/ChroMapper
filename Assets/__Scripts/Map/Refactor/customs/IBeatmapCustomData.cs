@@ -3,7 +3,7 @@
 public interface IBeatmapCustomData : ICustomData
 {
 
-    IEnumerable<ICustomEvent> CustomEvents { get; set; }
+    IList<ICustomEvent> CustomEvents { get; }
     
     
 
