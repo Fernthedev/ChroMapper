@@ -4,12 +4,13 @@ using Newtonsoft.Json.Linq;
 
 public class V2CustomEvent : V2CustomBeatmapItem<V2CustomEventCustomData>, ICustomEvent
 {
-    public V2CustomEvent(IDictionary<string, JToken> unserializedData) : base(unserializedData) => UnserializedData = unserializedData;
+
+    public V2CustomEvent(IDictionary<string, JToken> unserializedData) : base(unserializedData)
+    {
+    }
     
     public override IBeatmapJSON Clone() => new V2CustomEvent(new Dictionary<string, JToken>(UnserializedData));
 
-    public IDictionary<string, JToken> UnserializedData { get; }
-    
     public string Type
     {
         get => UnserializedData["_type"].ToObject<string>();
@@ -21,5 +22,7 @@ public class V2CustomEvent : V2CustomBeatmapItem<V2CustomEventCustomData>, ICust
         get => TypedCustomData;
         set => SetCustomData(value);
     }
+
+
 }
 

@@ -18,9 +18,9 @@ public class V2ListConverter<I, T> : JsonConverter<IList<I>>
         serializer.Deserialize<List<T>>(reader)?.Cast<I>().ToList();
 }
 
-public class V2NoteList : V2ListConverter<INote, V2Note> { }
-public class V2ObstacleList : V2ListConverter<IObstacle, V2Obstacle> { }
-public class V2EventList : V2ListConverter<IEvent, V2Event> { }
-public class V2CustomEventList : V2ListConverter<ICustomEvent, V2CustomEvent> { }
-public class V2SliderList : V2ListConverter<ISlider, V2Slider> { }
-public class V2WaypointList : V2ListConverter<IWaypoint, V2Waypoint> { }
+public class V2NoteListConverter : V2ListConverter<INote, V2Note> { }
+public class V2ObstacleListConverter : V2ListConverter<IObstacle, V2Obstacle> { }
+public class V2EventListConverter : V2ListConverter<IEvent, V2Event> { }
+public class V2CustomEventListConverter : V2ListConverter<ICustomEvent, V2CustomEvent> { }
+public class V2SliderListConverter : V2ListConverter<ISlider, V2Slider> { }
+public class V2WaypointListConverter : V2ListConverter<IWaypoint, V2Waypoint> { }

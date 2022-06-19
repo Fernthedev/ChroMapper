@@ -9,7 +9,11 @@ public class V2BeatmapCustomData : AbstractV2CustomData, IBeatmapCustomData
     [JsonConstructor]
     public V2BeatmapCustomData([NotNull] IDictionary<string, JToken> dictionary, IList<ICustomEvent> customEvents) : base(dictionary) => CustomEvents = customEvents;
 
-    [JsonConverter(typeof(V2CustomEventList))]
+    public V2BeatmapCustomData([NotNull] IDictionary<string, JToken> dictionary) : base(dictionary) => CustomEvents = dictionary["_customEvents"]?.ToObject<List<V2CustomEvent>>()?.Cast<ICustomEvent>().ToList();
+
+    
+    [JsonProperty("_customEvents")]
+    [JsonConverter(typeof(V2CustomEventListConverter))]
     public IList<ICustomEvent> CustomEvents
     {
         get;

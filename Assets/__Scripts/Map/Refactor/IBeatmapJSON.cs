@@ -20,7 +20,7 @@ public interface IBeatmapCustomJSON : IBeatmapJSON
 {
     [CanBeNull]
     [JsonIgnore]
-    ICustomData UntypedCustomData { get; }
+    ICustomData UntypedCustomData { get; set; }
 }
 
 public interface IBeatmapItem : IBeatmapJSON
