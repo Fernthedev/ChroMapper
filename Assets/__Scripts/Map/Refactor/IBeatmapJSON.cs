@@ -32,13 +32,7 @@ public interface ICustomBeatmapItem : IBeatmapItem, IBeatmapCustomJSON
 {
 }
 
-public interface ICustomBeatmapItem<T> : IBeatmapItem, IBeatmapCustomJSON where T: class, ICustomData
-{
-    [CanBeNull] 
-    public T CustomData { get; }
-}
-
-public interface IBeatmapObject<T> : ICustomBeatmapItem<T> where T : class, IObjectCustomData
+public interface IBeatmapObject : ICustomBeatmapItem
 {
     public int LineIndex { get; set; }
 }

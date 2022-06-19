@@ -18,25 +18,28 @@ public interface IBeatmap : IBeatmapCustomJSON
     // TODO: The rest
 }
 
-public interface INote : IBeatmapObject<INoteCustomData>
+public interface INote : IBeatmapObject
 {
 
     public int Type { get; set; }
 
     public int CutDirection { get; set; }
     public int LineLayer { get; set; }
+    public INoteCustomData CustomData { get; set; }
 }
 
-public interface IObstacle : IBeatmapObject<IObjectCustomData>
+public interface IObstacle : IBeatmapObject
 {
     public int Type { get; set; }
     
     public float Duration { get; set; }
     
     public int Width { get; set; }
+
+    public IObstacleCustomData CustomData { get; set; }
 }
 
-public interface IEvent : ICustomBeatmapItem<IEventCustomData>
+public interface IEvent : ICustomBeatmapItem
 {
 
     public int Type { get; set; }
@@ -44,6 +47,8 @@ public interface IEvent : ICustomBeatmapItem<IEventCustomData>
     public int Value { get; set; }
 
     public float? FloatValue { get; set; }
+    
+    public IEventCustomData CustomData { get; set; }
 }
 
 public interface ISlider : ICustomBeatmapItem
@@ -63,13 +68,17 @@ public interface ISlider : ICustomBeatmapItem
     public int SliderMidAnchorMode { get; set; }
 }
 
-public interface IWaypoint : IBeatmapObject<IObjectCustomData>
+public interface IWaypoint : IBeatmapObject
 {
     public int LineLayer { get; set; }
     public int OffsetDirection { get; set; }
+    
+    public IObjectCustomData CustomData { get; set; }
 }
 
-public interface ICustomEvent : ICustomBeatmapItem<ICustomEventCustomData>
+public interface ICustomEvent : ICustomBeatmapItem
 {
     public string Type { get; set; }
+    
+    public ICustomEventCustomData CustomData { get; set; }
 }

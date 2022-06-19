@@ -19,5 +19,7 @@ public class V2Waypoint : V2BeatmapObject<V2WaypointCustomData>, IWaypoint
         get => UnserializedData["_offsetDirection"].ToObject<int>();
         set => UnserializedData["_offsetDirection"] = value; 
     }
+
+    public IObjectCustomData CustomData { get => TypedCustomData; set => SetCustomData(value); }
 }
 

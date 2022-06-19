@@ -11,6 +11,8 @@ public interface IEventCustomData : ICustomData
     [CanBeNull]
     IList<int> LightIDs { get; set; }
 
-    [CanBeNull] ChromaGradient LightGadient { get; set; }
+    // TODO: Remove this and make v2 exclusive?
+    [CanBeNull] 
+    ChromaGradient LightGadient { get; set; }
 }
 

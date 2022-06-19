@@ -27,5 +27,7 @@ public class V2Note : V2BeatmapObject<V2NoteCustomData>, INote
         get => UnserializedData["_lineLayer"].ToObject<int>();
         set => UnserializedData["_lineLayer"] = value;
     }
+
+    public INoteCustomData CustomData { get => TypedCustomData; set => SetCustomData(value); }
 }
 

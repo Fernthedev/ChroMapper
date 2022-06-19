@@ -20,12 +20,31 @@ public abstract class V2BeatmapItem : IBeatmapItem
     }
 }
 
-public abstract class V2CustomBeatmapItem<T> : V2BeatmapItem, ICustomBeatmapItem, ICustomBeatmapItem<T> where T: class, ICustomData
+public abstract class V2CustomBeatmapItem<T> : V2BeatmapItem, ICustomBeatmapItem where T: class, ICustomData
 {
-    public V2CustomBeatmapItem(IDictionary<string, JToken> unserializedData) : base(unserializedData) => CustomData = unserializedData["_customData"].ToObject<T>();
+    public V2CustomBeatmapItem(IDictionary<string, JToken> unserializedData) : base(unserializedData) {}
 
     public bool isV3 => false;
 
-    public T CustomData { get; }
-    public ICustomData UntypedCustomData => ((ICustomBeatmapItem<T>)this).CustomData;
+    // For whatever reason 
+    [CanBeNull]
+    public T TypedCustomData 
+    {
+        get => UnserializedData["_customData"]?.ToObject<T>();
+        set => SetCustomData(value);
+    }
+
+    public ICustomData UntypedCustomData => TypedCustomData;
+
+    protected void SetCustomData([CanBeNull] ICustomData customData)
+    {
+        if (customData != null)
+        {
+            UnserializedData["_customData"] = JObject.FromObject(customData.UnserializedData);
+        }
+        else
+        {
+            UnserializedData.Remove("_customData");
+        }
+    }
 }

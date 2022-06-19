@@ -28,5 +28,6 @@ public class V2Obstacle : V2BeatmapObject<V2ObstacleCustomData>, IObstacle
         set => UnserializedData["_width"] = JToken.FromObject(value);
     }
 
+    public IObstacleCustomData CustomData { get => TypedCustomData; set => SetCustomData(value); }
 }
 

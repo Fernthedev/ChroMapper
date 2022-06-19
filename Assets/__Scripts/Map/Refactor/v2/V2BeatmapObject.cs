@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-public abstract class V2BeatmapObject<T> : V2CustomBeatmapItem<T>, IBeatmapObject<T> where T: class, IObjectCustomData
+public abstract class V2BeatmapObject<T> : V2CustomBeatmapItem<T>, IBeatmapObject where T: class, IObjectCustomData
 {
     public V2BeatmapObject(IDictionary<string, JToken> unserializedData) : base(unserializedData)
     {

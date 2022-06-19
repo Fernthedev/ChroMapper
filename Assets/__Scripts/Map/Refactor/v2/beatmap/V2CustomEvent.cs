@@ -15,5 +15,11 @@ public class V2CustomEvent : V2CustomBeatmapItem<V2CustomEventCustomData>, ICust
         get => UnserializedData["_type"].ToObject<string>();
         set => UnserializedData["_type"] = value;
     }
+
+    public ICustomEventCustomData CustomData
+    {
+        get => TypedCustomData;
+        set => SetCustomData(value);
+    }
 }
 

@@ -28,6 +28,6 @@ public class V2Event : V2CustomBeatmapItem<V2EventCustomData>, IEvent
         set => UnserializedData["_floatValue"] = value;
     }
 
-
+    public IEventCustomData CustomData { get => TypedCustomData; set => SetCustomData(value); }
 }
 
