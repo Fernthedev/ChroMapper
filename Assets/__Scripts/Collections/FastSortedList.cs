@@ -9,10 +9,15 @@ public class FastSortedList<T> : IList<T>
     private readonly IComparer<T> comparer;
 
     // TODO: Sort?
-    public FastSortedList(IEnumerable<T> list, [CanBeNull] IComparer<T> comparer = null)
+    public FastSortedList(IEnumerable<T> list, [CanBeNull] IComparer<T> comparer = null, bool sort = true)
     {
-        inner = new List<T>(list);
+        var newList = new List<T>(list);
+        inner = newList;
         this.comparer = comparer ?? Comparer<T>.Default;
+        if (sort)
+        {
+            newList.Sort(comparer);
+        }
     }
 
     public FastSortedList([CanBeNull] IComparer<T> comparer = null)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEngine;
 
 public static class IEnumerableExtensions
 {
@@ -54,9 +55,8 @@ public static class IEnumerableExtensions
         }
 
         var left = 0;
-        var right = list.Count - 1;
+        var right = list.Count;
         comparer ??= Comparer<T>.Default;
-
         
 
         while (left < right - 1)
@@ -73,8 +73,8 @@ public static class IEnumerableExtensions
             // else
             //     r = m - 1;
             var m = (left + right) / 2;
-            index = m;
             
+            index = m;
             selectedItem = list[m];
 
             var direction = comparer.Compare(item, selectedItem);
@@ -89,7 +89,7 @@ public static class IEnumerableExtensions
             if (direction > 0)
             {
                 // making left every element to the right of middle
-                left = m + 1;
+                left = m;
             }
             
             // our item is lesser than the middle
@@ -97,7 +97,7 @@ public static class IEnumerableExtensions
             if (direction < 0)
             {
                 // making right every element to the left of middle
-                right = m - 1;
+                right = m;
             }
         }
 
@@ -115,7 +115,7 @@ public static class IEnumerableExtensions
         if (beginIndex == -1) beginIndex = 0;
         if (endIndex == -1) endIndex = list.Count - 1;
 
-        var newList = new List<T>(endIndex - beginIndex + 2);
+        var newList = new List<T>(endIndex - beginIndex + 1);
         for (var i = beginIndex; i < endIndex + 1; i++)
         {
             newList.Add(list[i]);

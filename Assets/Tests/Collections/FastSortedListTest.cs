@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace Tests.Collections
@@ -24,7 +25,6 @@ namespace Tests.Collections
         [Test]
         public void OrderedListCopy()
         {
-            // This has to be sorted so the Contains call can work properly
             var oldList = new List<int>
             {
                 1,
@@ -56,10 +56,10 @@ namespace Tests.Collections
 
             // TODO: Sort on construct?
             Assert.Greater(list.Count, 0);
-            
+
             list.Clear();
 
-            Assert.AreEqual(list.Count, 0);
+            Assert.AreEqual(0, list.Count);
             Assert.Greater(oldList.Count, 0);
         }
 
@@ -73,9 +73,9 @@ namespace Tests.Collections
             list.Add(2);
             list.Add(1);
 
-            Assert.AreEqual(list[0], 1);
-            Assert.AreEqual(list[1], 2);
-            Assert.AreEqual(list[2], 4);
+            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(2, list[1]);
+            Assert.AreEqual(4, list[2]);
         }
 
         [Test]
@@ -90,8 +90,8 @@ namespace Tests.Collections
 
             list.Remove(2);
 
-            Assert.AreEqual(list[0], 1);
-            Assert.AreEqual(list[1], 4);
+            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(4, list[1]);
         }
 
         [Test]
@@ -118,9 +118,30 @@ namespace Tests.Collections
             list.Add(2);
             list.Add(1);
 
-            Assert.AreEqual(list[2], 1);
-            Assert.AreEqual(list[1], 2);
-            Assert.AreEqual(list[0], 4);
+            Assert.AreEqual(1, list[2]);
+            Assert.AreEqual(2, list[1]);
+            Assert.AreEqual(4, list[0]);
+        }
+
+        [Test]
+        public void OrderedListViewBetween()
+        {
+            // Disable because we want to use `Add`
+            // ReSharper disable once UseObjectOrCollectionInitializer
+            var list = new FastSortedList<int>();
+            list.Add(0);
+            list.Add(1);
+            list.Add(2);
+            list.Add(3);
+            list.Add(4);
+            list.Add(10);
+            list.Add(5);
+            list.Add(8);
+
+            var between = list.GetViewBetween(6, 11).ToList();
+            Assert.AreEqual(5, between[0]);
+            Assert.AreEqual(8, between[1]);
+            Assert.AreEqual(10, between[2]);
         }
     }
 }
