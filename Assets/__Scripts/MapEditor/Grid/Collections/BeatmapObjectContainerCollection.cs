@@ -27,7 +27,7 @@ public abstract class BeatmapObjectContainerCollection : MonoBehaviour
     /// <summary>
     ///     A sorted set of loaded BeatmapObjects that is garaunteed to be sorted by time.
     /// </summary>
-    public SortedSet<BaseObject> LoadedObjects = new SortedSet<BaseObject>(new ObjectComparer());
+    public IList<BaseObject> LoadedObjects = new FastSortedList<BaseObject>();
 
     /// <summary>
     ///     A list of unsorted BeatmapObjects. Recommended only for fast iteration.
@@ -172,7 +172,7 @@ public abstract class BeatmapObjectContainerCollection : MonoBehaviour
         }
     }
 
-    public SortedSet<BaseObject> GetBetween(float jsonTime, float jsonTime2)
+    public IEnumerable<BaseObject> GetBetween(float jsonTime, float jsonTime2)
     {
         // Events etc. can still have a sort order between notes
         var now = new V2Note(jsonTime - 0.0000001f, 0f, 0, 0, 0, 0);

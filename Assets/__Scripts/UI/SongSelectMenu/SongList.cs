@@ -27,7 +27,7 @@ public class SongList : MonoBehaviour
 
     private static bool lastVisitedWasWip = true;
 
-    public SortedSet<BeatSaberSong> Songs = new SortedSet<BeatSaberSong>(sortName);
+    public IList<BeatSaberSong> Songs = new FastSortedList<BeatSaberSong>(sortName);
     public bool WipLevels = true;
     public bool FilteredBySearch;
 
@@ -66,7 +66,7 @@ public class SongList : MonoBehaviour
     private void SwitchSort(IComparer<BeatSaberSong> newSort, Sprite sprite)
     {
         sortImage.sprite = sprite;
-        Songs = new SortedSet<BeatSaberSong>(Songs, newSort);
+        Songs = new FastSortedList<BeatSaberSong>(Songs, newSort);
         UpdateSongList();
     }
 

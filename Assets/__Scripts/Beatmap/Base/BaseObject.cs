@@ -1,3 +1,4 @@
+using System;
 using Beatmap.Base.Customs;
 using Beatmap.Enums;
 using LiteNetLib.Utils;
@@ -6,7 +7,8 @@ using UnityEngine;
 
 namespace Beatmap.Base
 {
-    public abstract class BaseObject : BaseItem, ICustomData, IHeckObject, IChromaObject, INetSerializable
+    public abstract class BaseObject : BaseItem, ICustomData, IHeckObject, IChromaObject, INetSerializable,
+        IComparable<BaseObject>
     {
         public virtual void Serialize(NetDataWriter writer)
         {
@@ -43,23 +45,28 @@ namespace Beatmap.Base
         public bool HasAttachedContainer { get; set; } = false;
 
         private float jsonTime;
+
         public float JsonTime
         {
             get => jsonTime;
             set
             {
-                var bpmChangeGridContainer = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
+                var bpmChangeGridContainer =
+                    BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
                 songBpmTime = bpmChangeGridContainer?.JsonTimeToSongBpmTime(value) ?? value;
                 jsonTime = value;
             }
         }
+
         private float songBpmTime { get; set; }
+
         public float SongBpmTime
         {
             get => songBpmTime;
             set
             {
-                var bpmChangeGridContainer = BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
+                var bpmChangeGridContainer =
+                    BeatmapObjectContainerCollection.GetCollectionForType<BPMChangeGridContainer>(ObjectType.BpmChange);
                 jsonTime = bpmChangeGridContainer?.SongBpmTimeToJsonTime(value) ?? value;
                 songBpmTime = value;
             }
@@ -103,7 +110,9 @@ namespace Beatmap.Base
         protected virtual void ParseCustom()
         {
             CustomTrack = (CustomData?.HasKey(CustomKeyTrack) ?? false) ? CustomData?[CustomKeyTrack] : null;
-            CustomColor = (CustomData?.HasKey(CustomKeyColor) ?? false) ? CustomData?[CustomKeyColor].ReadColor() : null;
+            CustomColor = (CustomData?.HasKey(CustomKeyColor) ?? false)
+                ? CustomData?[CustomKeyColor].ReadColor()
+                : null;
         }
 
         public void RefreshCustom() => ParseCustom();
@@ -111,8 +120,10 @@ namespace Beatmap.Base
         protected internal virtual JSONNode SaveCustom()
         {
             CustomData = CustomData is JSONObject ? CustomData : new JSONObject();
-            if (CustomTrack != null) CustomData[CustomKeyTrack] = CustomTrack; else CustomData.Remove(CustomKeyTrack);
-            if (CustomColor != null) CustomData[CustomKeyColor] = CustomColor; else CustomData.Remove(CustomKeyColor);
+            if (CustomTrack != null) CustomData[CustomKeyTrack] = CustomTrack;
+            else CustomData.Remove(CustomKeyTrack);
+            if (CustomColor != null) CustomData[CustomKeyColor] = CustomColor;
+            else CustomData.Remove(CustomKeyColor);
             return CustomData;
         }
 
@@ -125,5 +136,9 @@ namespace Beatmap.Base
 
             return CustomData;
         }
+
+        public int CompareTo(BaseObject other) => JsonTime == other.JsonTime
+            ? GetHashCode().CompareTo(other.GetHashCode())
+            : JsonTime.CompareTo(other.JsonTime);
     }
 }

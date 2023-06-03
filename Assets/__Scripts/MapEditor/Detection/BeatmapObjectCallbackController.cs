@@ -30,11 +30,11 @@ public class BeatmapObjectCallbackController : MonoBehaviour
 
     [FormerlySerializedAs("useAudioTime")] public bool UseAudioTime;
 
-    private readonly HashSet<BaseObject> nextEvents = new HashSet<BaseObject>();
-    private readonly HashSet<BaseObject> nextNotes = new HashSet<BaseObject>();
-    private HashSet<BaseObject> allEvents = new HashSet<BaseObject>();
-    private HashSet<BaseObject> allNotes = new HashSet<BaseObject>();
-    private HashSet<BaseObject> queuedToClear = new HashSet<BaseObject>();
+    private readonly IList<BaseObject> nextEvents = new FastSortedList<BaseObject>();
+    private readonly IList<BaseObject> nextNotes = new FastSortedList<BaseObject>();
+    private IList<BaseObject> allEvents = new FastSortedList<BaseObject>();
+    private IList<BaseObject> allNotes = new FastSortedList<BaseObject>();
+    private IList<BaseObject> queuedToClear = new FastSortedList<BaseObject>();
 
     private float curTime;
     public Action<bool, int, BaseObject> EventPassedThreshold;
@@ -150,7 +150,7 @@ public class BeatmapObjectCallbackController : MonoBehaviour
         //notesContainer.SortObjects();
         curTime = UseAudioTime ? timeSyncController.CurrentAudioBeats : timeSyncController.CurrentSongBpmTime;
         allNotes.Clear();
-        allNotes = new HashSet<BaseObject>(noteGridContainer.LoadedObjects.Where(x => x.SongBpmTime >= curTime + Offset));
+        allNotes = new FastSortedList<BaseObject>(noteGridContainer.LoadedObjects.Where(x => x.SongBpmTime >= curTime + Offset));
         nextNoteIndex = noteGridContainer.LoadedObjects.Count - allNotes.Count;
         RecursiveNoteCheckFinished?.Invoke(natural, nextNoteIndex - 1);
         nextNotes.Clear();
@@ -164,7 +164,7 @@ public class BeatmapObjectCallbackController : MonoBehaviour
     private void CheckAllEvents(bool natural)
     {
         allEvents.Clear();
-        allEvents = new HashSet<BaseObject>(eventGridContainer.LoadedObjects.Where(x => x.SongBpmTime >= curTime + Offset));
+        allEvents = new FastSortedList<BaseObject>(eventGridContainer.LoadedObjects.Where(x => x.SongBpmTime >= curTime + Offset));
 
         nextEventIndex = eventGridContainer.LoadedObjects.Count - allEvents.Count;
         RecursiveEventCheckFinished?.Invoke(natural, nextEventIndex - 1);
@@ -239,7 +239,7 @@ public class BeatmapObjectCallbackController : MonoBehaviour
 
     private void ChainGridContainerObjectDeletedEvent(BaseObject obj) => OnChainObjDeleted(obj);
 
-    private void OnObjSpawn(BaseObject obj, HashSet<BaseObject> nextObjects)
+    private void OnObjSpawn(BaseObject obj, ICollection<BaseObject> nextObjects)
     {
         if (!timeSyncController.IsPlaying) return;
 
@@ -269,7 +269,7 @@ public class BeatmapObjectCallbackController : MonoBehaviour
         }
     }
 
-    private void QueueNextObject(HashSet<BaseObject> allObjs, HashSet<BaseObject> nextObjs)
+    private void QueueNextObject(ICollection<BaseObject> allObjs, ICollection<BaseObject> nextObjs)
     {
         // Assumes that the "Count > 0" check happens before this is called
         var first = allObjs.First();

@@ -96,12 +96,15 @@ public class MapLoader : MonoBehaviour
 
     public IEnumerator LoadObjects<T>(IEnumerable<T> objects) where T : BaseObject
     {
+        // multiple enumerations can cause issues, so we make it a list
+        objects = objects as IList<T> ?? objects.ToList();
+        
         if (!objects.Any()) yield break;
         var collection = BeatmapObjectContainerCollection.GetCollectionForType(objects.First().ObjectType);
         if (collection == null) yield break;
         foreach (var obj in collection.LoadedObjects.ToArray()) collection.DeleteObject(obj, false, false);
         PersistentUI.Instance.LevelLoadSlider.gameObject.SetActive(true);
-        collection.LoadedObjects = new SortedSet<BaseObject>(objects, new ObjectComparer());
+        collection.LoadedObjects = new FastSortedList<BaseObject>(objects);
         collection.UnsortedObjects = collection.LoadedObjects.ToList();
         UpdateSlider<T>();
 
